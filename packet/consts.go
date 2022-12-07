@@ -10,3 +10,17 @@ const (
 	NOTIMP
 	REFUSED
 )
+
+type QueryType int
+
+const (
+	UnknowQueryType QueryType = iota
+	A
+)
+
+type Class int
+
+const (
+	UnkonwClass Class = iota
+	IN
+)
