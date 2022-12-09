@@ -6,31 +6,10 @@ import (
 	"strings"
 )
 
-type DNSPacketHeader struct {
-	TransactionID int // 16bits
-	Flags         int // 16bits
-	Questions     int // 16bits
-	AnswersRRs    int // 16bits
-	AuthorityRRs  int // 16bits
-	AdditionalRRs int // 16bits
-}
-
 type Queries struct {
 	Name  string
 	QType QueryType
 	Class Class
-}
-
-func serializeHeader(header DNSPacketHeader) []byte {
-	raw := make([]byte, 12)
-
-	binary.BigEndian.PutUint16(raw, uint16(header.TransactionID))
-	binary.BigEndian.PutUint16(raw[2:], uint16(header.Flags))
-	binary.BigEndian.PutUint16(raw[4:], uint16(header.Questions))
-	binary.BigEndian.PutUint16(raw[6:], uint16(header.AnswersRRs))
-	binary.BigEndian.PutUint16(raw[8:], uint16(header.AuthorityRRs))
-	binary.BigEndian.PutUint16(raw[10:], uint16(header.AdditionalRRs))
-	return raw
 }
 
 func serializeQueries(queries Queries) []byte {
@@ -63,7 +42,7 @@ func NewRequest(name string) []byte {
 		offset  int
 	)
 
-	header := serializeHeader(DNSPacketHeader{
+	header := MarshalHeader(DNSPacketHeader{
 		TransactionID: rand.Intn(1 << 16),
 		Flags:         0x0100,
 		Questions:     1,

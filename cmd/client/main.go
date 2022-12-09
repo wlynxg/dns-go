@@ -3,6 +3,7 @@ package main
 import (
 	"dns-go/packet"
 	"fmt"
+	"log"
 	"net"
 )
 
@@ -30,5 +31,14 @@ func main() {
 		fmt.Println("接收数据失败, err: ", err)
 		return
 	}
+
+	header := &packet.DNSPacketHeader{}
+	err = packet.UnmarshalHeader(data[:n], header)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Printf("%+v\n", header)
+
 	fmt.Printf("recv:%v addr:%v count:%v\n", string(data[:n]), remoteAddr, n)
 }
