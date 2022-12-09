@@ -1,40 +1,8 @@
 package packet
 
 import (
-	"encoding/binary"
 	"math/rand"
-	"strings"
 )
-
-type Queries struct {
-	Name  string
-	QType QueryType
-	Class Class
-}
-
-func serializeQueries(queries Queries) []byte {
-	var (
-		raw    = make([]byte, 512)
-		offset = 0
-	)
-
-	domains := strings.Split(queries.Name, ".")
-	for _, domain := range domains {
-		raw[offset] = byte(len(domain))
-		offset += 1
-		copy(raw[offset:], domain)
-		offset += len(domain)
-	}
-	raw[offset] = 0
-	offset += 1
-
-	binary.BigEndian.PutUint16(raw[offset:], uint16(queries.QType))
-	offset += 2
-	binary.BigEndian.PutUint16(raw[offset:], uint16(queries.Class))
-	offset += 2
-
-	return raw[:offset]
-}
 
 func NewRequest(name string) []byte {
 	var (
@@ -53,7 +21,7 @@ func NewRequest(name string) []byte {
 	copy(request[:], header)
 	offset += len(header)
 
-	queries := serializeQueries(Queries{
+	queries := MarshalQueries(&Queries{
 		Name:  name,
 		QType: A,
 		Class: IN,

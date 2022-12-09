@@ -40,5 +40,13 @@ func main() {
 	}
 	fmt.Printf("%+v\n", header)
 
+	queries := &packet.Queries{}
+	err = packet.UnmarshalQueries(data[12:n], queries)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Printf("%+v\n", queries)
+
 	fmt.Printf("recv:%v addr:%v count:%v\n", string(data[:n]), remoteAddr, n)
 }
