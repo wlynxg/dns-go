@@ -26,9 +26,9 @@ func MarshalHeader(header DNSPacketHeader) []byte {
 	return raw
 }
 
-func UnmarshalHeader(raw []byte, header *DNSPacketHeader) error {
+func UnmarshalHeader(raw []byte, header *DNSPacketHeader) (int, error) {
 	if len(raw) < 12 {
-		return errors.New("this is not a complete DNS packet header")
+		return -1, errors.New("this is not a complete DNS packet header")
 	}
 
 	header.TransactionID = int(binary.BigEndian.Uint16(raw[0:2]))
@@ -37,5 +37,5 @@ func UnmarshalHeader(raw []byte, header *DNSPacketHeader) error {
 	header.AnswersRRs = int(binary.BigEndian.Uint16(raw[6:8]))
 	header.AuthorityRRs = int(binary.BigEndian.Uint16(raw[8:10]))
 	header.AdditionalRRs = int(binary.BigEndian.Uint16(raw[10:12]))
-	return nil
+	return 12, nil
 }

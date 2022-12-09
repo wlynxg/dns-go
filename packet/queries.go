@@ -44,9 +44,9 @@ func MarshalQueries(queries *Queries) []byte {
 	return raw[:offset]
 }
 
-func UnmarshalQueries(raw []byte, queries *Queries) error {
+func UnmarshalQueries(raw []byte, queries *Queries) (int, error) {
 	if len(raw) < 6 {
-		return errors.New("this is not a valid queries slice")
+		return -1, errors.New("this is not a valid queries slice")
 	}
 
 	var (
@@ -66,5 +66,6 @@ func UnmarshalQueries(raw []byte, queries *Queries) error {
 	queries.QType = QueryType(binary.BigEndian.Uint16(raw[offset : offset+2]))
 	offset += 2
 	queries.Class = Class(binary.BigEndian.Uint16(raw[offset : offset+2]))
-	return nil
+	offset += 2
+	return offset, nil
 }

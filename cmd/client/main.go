@@ -26,27 +26,37 @@ func main() {
 		return
 	}
 	data := make([]byte, 4096)
-	n, remoteAddr, err := socket.ReadFromUDP(data) // 接收数据
+	n, _, err := socket.ReadFromUDP(data) // 接收数据
 	if err != nil {
 		fmt.Println("接收数据失败, err: ", err)
 		return
 	}
 
+	fmt.Printf("%v\n", data[:n])
+	var offset int
 	header := &packet.DNSPacketHeader{}
-	err = packet.UnmarshalHeader(data[:n], header)
+	hs, err := packet.UnmarshalHeader(data[offset:n], header)
 	if err != nil {
 		log.Println(err)
 		return
 	}
+	offset += hs
 	fmt.Printf("%+v\n", header)
 
 	queries := &packet.Queries{}
-	err = packet.UnmarshalQueries(data[12:n], queries)
+	qs, err := packet.UnmarshalQueries(data[offset:n], queries)
 	if err != nil {
 		log.Println(err)
 		return
 	}
+	offset += qs
 	fmt.Printf("%+v\n", queries)
 
-	fmt.Printf("recv:%v addr:%v count:%v\n", string(data[:n]), remoteAddr, n)
+	answers := &packet.Answers{}
+	_, err = packet.UnmarshalAnswers(data[offset:n], answers)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Printf("%+v\n", answers)
 }
