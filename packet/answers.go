@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"net"
+	"strings"
 )
 
 type Answers struct {
@@ -15,8 +16,38 @@ type Answers struct {
 	Resource     string
 }
 
-func MarshalAnswers(ansers *Answers) []byte {
-	return nil
+func MarshalAnswers(answers *Answers) []byte {
+	var (
+		raw    = make([]byte, FieldBuffSize)
+		offset int
+	)
+
+	domains := strings.Split(answers.Name, ".")
+	for _, domain := range domains {
+		raw[offset] = byte(len(domain))
+		offset += 1
+		copy(raw[offset:], domain)
+		offset += len(domain)
+	}
+	raw[offset] = 0
+	offset += 1
+
+	binary.BigEndian.PutUint16(raw[offset:], uint16(answers.QType))
+	offset += 2
+	binary.BigEndian.PutUint16(raw[offset:], uint16(answers.Class))
+	offset += 2
+	binary.BigEndian.PutUint32(raw[offset:], uint32(answers.TTL))
+	offset += 4
+	binary.BigEndian.PutUint16(raw[offset:], uint16(answers.ResourceSize))
+	offset += 2
+
+	if answers.QType == A && answers.ResourceSize == 4 {
+		ip := net.ParseIP(answers.Resource)
+		copy(raw[offset:], ip.To4())
+		offset += 4
+	}
+
+	return raw[:offset]
 }
 
 func UnmarshalAnswers(raw []byte, answers *Answers) (int, error) {

@@ -24,3 +24,8 @@ const (
 	UnkonwClass Class = iota
 	IN
 )
+
+const (
+	FieldBuffSize  = 256
+	PacketBuffSize = 1024
+)
