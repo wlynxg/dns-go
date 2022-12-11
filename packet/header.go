@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-type DNSPacketHeader struct {
+type Header struct {
 	TransactionID int // 16bits
 	Flags         int // 16bits
 	Questions     int // 16bits
@@ -14,7 +14,7 @@ type DNSPacketHeader struct {
 	AdditionalRRs int // 16bits
 }
 
-func MarshalHeader(header DNSPacketHeader) []byte {
+func MarshalHeader(header Header) []byte {
 	raw := make([]byte, 12)
 
 	binary.BigEndian.PutUint16(raw, uint16(header.TransactionID))
@@ -26,7 +26,7 @@ func MarshalHeader(header DNSPacketHeader) []byte {
 	return raw
 }
 
-func UnmarshalHeader(raw []byte, header *DNSPacketHeader) (int, error) {
+func UnmarshalHeader(raw []byte, header *Header) (int, error) {
 	if len(raw) < 12 {
 		return -1, errors.New("this is not a complete DNS packet header")
 	}

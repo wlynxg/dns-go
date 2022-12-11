@@ -34,7 +34,7 @@ func main() {
 
 	fmt.Printf("%v\n", data[:n])
 	var offset int
-	header := &packet.DNSPacketHeader{}
+	header := &packet.Header{}
 	hs, err := packet.UnmarshalHeader(data[offset:n], header)
 	if err != nil {
 		log.Println(err)

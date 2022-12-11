@@ -4,13 +4,18 @@ import (
 	"math/rand"
 )
 
+type Request struct {
+	Header  Header
+	Queries Queries
+}
+
 func NewRequest(name string) []byte {
 	var (
 		request [512]byte
 		offset  int
 	)
 
-	header := MarshalHeader(DNSPacketHeader{
+	header := MarshalHeader(Header{
 		TransactionID: rand.Intn(1 << 16),
 		Flags:         0x0100,
 		Questions:     1,
