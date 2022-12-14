@@ -14,7 +14,7 @@ type Header struct {
 	AdditionalRRs int // 16bits
 }
 
-func MarshalHeader(header Header) []byte {
+func MarshalHeader(header *Header) []byte {
 	raw := make([]byte, 12)
 
 	binary.BigEndian.PutUint16(raw, uint16(header.TransactionID))

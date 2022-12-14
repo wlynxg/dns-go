@@ -15,7 +15,7 @@ func NewRequest(name string) []byte {
 		offset  int
 	)
 
-	header := MarshalHeader(Header{
+	header := MarshalHeader(&Header{
 		TransactionID: rand.Intn(1 << 16),
 		Flags:         0x0100,
 		Questions:     1,

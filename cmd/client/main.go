@@ -3,7 +3,6 @@ package main
 import (
 	"dns-go/packet"
 	"fmt"
-	"log"
 	"net"
 )
 
@@ -33,30 +32,11 @@ func main() {
 	}
 
 	fmt.Printf("%v\n", data[:n])
-	var offset int
-	header := &packet.Header{}
-	hs, err := packet.UnmarshalHeader(data[offset:n], header)
+	res := &packet.Response{}
+	_, err = packet.UnmarshalResponse(data[:n], res)
 	if err != nil {
-		log.Println(err)
+		panic(err)
 		return
 	}
-	offset += hs
-	fmt.Printf("%+v\n", header)
-
-	queries := &packet.Queries{}
-	qs, err := packet.UnmarshalQueries(data[offset:n], queries)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	offset += qs
-	fmt.Printf("%+v\n", queries)
-
-	answers := &packet.Answers{}
-	_, err = packet.UnmarshalAnswers(data[offset:n], answers)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	fmt.Printf("%+v\n", answers)
+	fmt.Printf("%+v\n", res)
 }
