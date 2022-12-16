@@ -38,3 +38,23 @@ func NewRequest(name string) []byte {
 	copy(result, request[:offset])
 	return result
 }
+
+func UnmarshalRequest(raw []byte, req *Request) (int, error) {
+	var (
+		offset = 0
+	)
+
+	n, err := UnmarshalHeader(raw[offset:], &req.Header)
+	if err != nil {
+		return 0, err
+	}
+	offset += n
+
+	n, err = UnmarshalQueries(raw[offset:], &req.Queries)
+	if err != nil {
+		return 0, err
+	}
+	offset += n
+
+	return offset, err
+}
