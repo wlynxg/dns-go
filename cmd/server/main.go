@@ -21,8 +21,13 @@ func main() {
 		req := &packet.Request{}
 		_, err = packet.UnmarshalRequest(buff[:n], req)
 		trace(err)
-
 		fmt.Printf("%+v\n", req)
+
+		response, err := packet.NewResponse(req)
+		trace(err)
+
+		_, err = server.WriteToUDP(response, remote)
+		trace(err)
 	}
 }
 
