@@ -50,7 +50,7 @@ func UnmarshalResponse(raw []byte, res *Response) (int, error) {
 }
 
 func NewResponse(req *Request) ([]byte, error) {
-	ip, err := record.Query(req.Queries.Name)
+	ip, err := record.Query(req.Queries.Name, req.Queries.QType)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package record
 
 import (
+	"dns-go/packet"
 	"errors"
 	"net"
 )
@@ -11,7 +12,7 @@ var (
 	}
 )
 
-func Query(domain string) (net.IP, error) {
+func Query(domain string, qtype packet.QueryType) (net.IP, error) {
 	if ip, ok := data[domain]; ok {
 		return ip, nil
 	} else {
