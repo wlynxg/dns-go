@@ -17,7 +17,7 @@ func main() {
 	}
 	defer socket.Close()
 
-	sendData := packet.NewRequest("google.com")
+	sendData := packet.NewRequest("google.com", packet.A)
 	fmt.Println("send data:", sendData)
 	_, err = socket.Write(sendData) // 发送数据
 	if err != nil {

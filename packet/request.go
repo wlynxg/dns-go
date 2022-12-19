@@ -9,7 +9,7 @@ type Request struct {
 	Queries Queries
 }
 
-func NewRequest(name string) []byte {
+func NewRequest(name string, qType QueryType) []byte {
 	var (
 		request [512]byte
 		offset  int
@@ -28,7 +28,7 @@ func NewRequest(name string) []byte {
 
 	queries := MarshalQueries(&Queries{
 		Name:  name,
-		QType: A,
+		QType: qType,
 		Class: IN,
 	})
 	copy(request[offset:], queries)
