@@ -7,7 +7,11 @@ import (
 	"strings"
 )
 
-type Answers struct {
+type Answer interface {
+	i()
+}
+
+type AnswerBase struct {
 	Name         string
 	QType        QueryType
 	Class        Class
@@ -16,41 +20,53 @@ type Answers struct {
 	Resource     string
 }
 
-func MarshalAnswers(answers *Answers) []byte {
-	var (
-		raw    = make([]byte, FieldBuffSize)
-		offset int
-	)
+func (a AnswerBase) i() {}
 
-	domains := strings.Split(answers.Name, ".")
-	for _, domain := range domains {
-		raw[offset] = byte(len(domain))
-		offset += 1
-		copy(raw[offset:], domain)
-		offset += len(domain)
-	}
-	raw[offset] = 0
-	offset += 1
-
-	binary.BigEndian.PutUint16(raw[offset:], uint16(answers.QType))
-	offset += 2
-	binary.BigEndian.PutUint16(raw[offset:], uint16(answers.Class))
-	offset += 2
-	binary.BigEndian.PutUint32(raw[offset:], uint32(answers.TTL))
-	offset += 4
-	binary.BigEndian.PutUint16(raw[offset:], uint16(answers.ResourceSize))
-	offset += 2
-
-	if answers.QType == A && answers.ResourceSize == 4 {
-		ip := net.ParseIP(answers.Resource)
-		copy(raw[offset:], ip.To4())
-		offset += 4
-	}
-
-	return raw[:offset]
+type AnswerA struct {
+	AnswerBase
+	IP net.IP
 }
 
-func UnmarshalAnswers(raw []byte, answers *Answers) (int, error) {
+func MarshalAnswers(answer Answer) []byte {
+	switch answer.(type) {
+	case AnswerA:
+		as := answer.(AnswerA)
+		var (
+			raw    = make([]byte, FieldBuffSize)
+			offset int
+		)
+
+		domains := strings.Split(as.Name, ".")
+		for _, domain := range domains {
+			raw[offset] = byte(len(domain))
+			offset += 1
+			copy(raw[offset:], domain)
+			offset += len(domain)
+		}
+		raw[offset] = 0
+		offset += 1
+
+		binary.BigEndian.PutUint16(raw[offset:], uint16(as.QType))
+		offset += 2
+		binary.BigEndian.PutUint16(raw[offset:], uint16(as.Class))
+		offset += 2
+		binary.BigEndian.PutUint32(raw[offset:], uint32(as.TTL))
+		offset += 4
+		binary.BigEndian.PutUint16(raw[offset:], uint16(as.ResourceSize))
+		offset += 2
+
+		if as.QType == A && as.ResourceSize == 4 {
+			ip := net.ParseIP(as.Resource)
+			copy(raw[offset:], ip.To4())
+			offset += 4
+		}
+
+		return raw[:offset]
+	}
+	return nil
+}
+
+func UnmarshalAnswers(raw []byte, answers *AnswerBase) (int, error) {
 	var (
 		offset int
 		domain bytes.Buffer

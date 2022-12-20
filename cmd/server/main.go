@@ -23,7 +23,7 @@ func main() {
 		trace(err)
 		fmt.Printf("%+v\n", req)
 
-		response, err := packet.NewResponse(req)
+		response, err := packet.BuildResponse(req)
 		trace(err)
 
 		_, err = server.WriteToUDP(response, remote)
