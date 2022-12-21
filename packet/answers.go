@@ -27,6 +27,12 @@ type AnswerA struct {
 	IP net.IP
 }
 
+type AnswerMX struct {
+	AnswerBase
+	Preference   int
+	MailExchange string
+}
+
 func MarshalAnswers(answer Answer) []byte {
 	switch answer.(type) {
 	case AnswerA:
