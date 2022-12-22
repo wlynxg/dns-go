@@ -33,6 +33,12 @@ type AnswerMX struct {
 	MailExchange string
 }
 
+type AnswerTXT struct {
+	AnswerBase
+	TXTLength int
+	TXT       string
+}
+
 func MarshalAnswers(answer Answer) []byte {
 	switch answer.(type) {
 	case AnswerA:
