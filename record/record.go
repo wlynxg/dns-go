@@ -68,4 +68,5 @@ func QueryByOtherNameserver(domain string, qtype packet.QueryType) {
 
 		results = append(results, res.Answers)
 	}
+	return
 }
