@@ -34,7 +34,7 @@ func QueryA(domain string, qtype packet.QueryType) ([]net.IP, error) {
 	}
 }
 
-func QueryByOtherNameserver(domain string, qtype packet.QueryType) {
+func QueryByOtherNameserver(domain string, qtype packet.QueryType) error {
 	once.Do(func() {
 		var err error
 		conn, err = net.ListenUDP("udp", nil)
@@ -68,5 +68,5 @@ func QueryByOtherNameserver(domain string, qtype packet.QueryType) {
 
 		results = append(results, res.Answers)
 	}
-	return
+	return nil
 }
